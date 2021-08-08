@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/warrensbox/terraform-switcher/lib"
+	"github.com/jb-abbadie/simple-tfswitch/lib"
 )
 
 const (
@@ -38,20 +38,6 @@ func TestGetTFList(t *testing.T) {
 		t.Log("Write versions exist (expected)")
 	}
 
-}
-
-//TestRemoveDuplicateVersions :  test to removed duplicate
-func TestRemoveDuplicateVersions(t *testing.T) {
-
-	test_array := []string{"0.0.1", "0.0.2", "0.0.3", "0.0.1", "0.12.0-beta1", "0.12.0-beta1"}
-
-	list := lib.RemoveDuplicateVersions(test_array)
-
-	if len(list) == len(test_array) {
-		log.Fatalf("Not able to remove duplicate: %s\n", test_array)
-	} else {
-		t.Log("Write versions exist (expected)")
-	}
 }
 
 //TestValidVersionFormat : test if func returns valid version format

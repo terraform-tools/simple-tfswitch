@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	lib "github.com/warrensbox/terraform-switcher/lib"
+	lib "github.com/jb-abbadie/simple-tfswitch/lib"
 )
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
@@ -90,7 +90,6 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 func TestDownloadFromURL_FileExist(t *testing.T) {
 
 	hashiURL := "https://releases.hashicorp.com/terraform/"
-	installFile := "terraform"
 	installVersion := "terraform_"
 	installPath := getInstallLocation(".terraform.versions_test")
 	macOS := "_darwin_amd64.zip"
@@ -141,7 +140,7 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 
 	url = hashiURL + latestVersion + "/" + installVersion + latestVersion + macOS
 	expectedFile = filepath.Join(usr.HomeDir, installPath, installVersion+latestVersion+macOS)
-	installFile, errDownload = lib.DownloadFromURL(installLocation, url)
+	installFile, errDownload := lib.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
 		t.Logf("Expected file name %v to be downloaded", expectedFile)

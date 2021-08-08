@@ -2,15 +2,10 @@ package lib
 
 import (
 	"archive/zip"
-	"bufio"
-	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 // RenameFile : rename file name
@@ -39,10 +34,7 @@ func RemoveFiles(src string) {
 // CheckFileExist : check if file exist in directory
 func CheckFileExist(file string) bool {
 	_, err := os.Stat(file)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 // Unzip will decompress a zip archive, moving all files and folders
@@ -72,7 +64,10 @@ func Unzip(src string, dest string) ([]string, error) {
 		if f.FileInfo().IsDir() {
 
 			// Make Folder
-			os.MkdirAll(fpath, os.ModePerm)
+			err := os.MkdirAll(fpath, os.ModePerm)
+			if err != nil {
+				return []string{}, err
+			}
 
 		} else {
 
@@ -112,96 +107,6 @@ func CreateDirIfNotExist(dir string) {
 	}
 }
 
-//WriteLines : writes into file
-func WriteLines(lines []string, path string) (err error) {
-	var (
-		file *os.File
-	)
-
-	if file, err = os.Create(path); err != nil {
-		return err
-	}
-	defer file.Close()
-
-	for _, item := range lines {
-		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
-		if err != nil {
-			fmt.Println(err)
-			break
-		}
-	}
-
-	return nil
-}
-
-// ReadLines : Read a whole file into the memory and store it as array of lines
-func ReadLines(path string) (lines []string, err error) {
-	var (
-		file   *os.File
-		part   []byte
-		prefix bool
-	)
-	if file, err = os.Open(path); err != nil {
-		return
-	}
-	defer file.Close()
-
-	reader := bufio.NewReader(file)
-	buffer := bytes.NewBuffer(make([]byte, 0))
-	for {
-		if part, prefix, err = reader.ReadLine(); err != nil {
-			break
-		}
-		buffer.Write(part)
-		if !prefix {
-			lines = append(lines, buffer.String())
-			buffer.Reset()
-		}
-	}
-	if err == io.EOF {
-		err = nil
-	}
-	return
-}
-
-//IsDirEmpty : check if directory is empty (TODO UNIT TEST)
-func IsDirEmpty(name string) bool {
-
-	exist := false
-
-	f, err := os.Open(name)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	_, err = f.Readdirnames(1) // Or f.Readdir(1)
-	if err == io.EOF {
-		exist = true
-	}
-	return exist // Either not empty or error, suits both cases
-}
-
-//CheckDirHasTGBin : // check binary exist (TODO UNIT TEST)
-func CheckDirHasTGBin(dir, prefix string) bool {
-
-	exist := false
-
-	files, err := ioutil.ReadDir(dir)
-	if err != nil {
-		log.Fatal(err)
-		//return exist, err
-	}
-	res := []string{}
-	for _, f := range files {
-		if !f.IsDir() && strings.HasPrefix(f.Name(), prefix) {
-			res = append(res, filepath.Join(dir, f.Name()))
-			exist = true
-		}
-	}
-	return exist
-}
-
 //CheckDirExist : check if directory exist
 //dir=path to file
 //return bool
@@ -217,38 +122,3 @@ func CheckDirExist(dir string) bool {
 func Path(value string) string {
 	return filepath.Dir(value)
 }
-
-// GetFileName : remove file ext.  .tfswitch.config returns .tfswitch
-func GetFileName(configfile string) string {
-	return strings.TrimSuffix(configfile, filepath.Ext(configfile))
-}
-
-//Check if user has permission to directory :
-//dir=path to file
-//return bool
-// func CheckDirWritable(dir string) bool {
-// 	return unix.Access(dir, unix.W_OK) == nil
-// }
-
-// func WindowsCheckDirWritable(path string) bool {
-
-// 	info, err := os.Stat(path)
-// 	if err != nil {
-// 		fmt.Println("Path doesn't exist")
-// 		return false
-// 	}
-
-// 	err = nil
-// 	if !info.IsDir() {
-// 		fmt.Println("Path isn't a directory")
-// 		return false
-// 	}
-
-// 	// Check if the user bit is enabled in file permission
-// 	if info.Mode().Perm()&(1<<(uint(7))) == 0 {
-// 		fmt.Println("Write permission bit is not set on this file for user")
-// 		return false
-// 	}
-
-// 	return true
-// }

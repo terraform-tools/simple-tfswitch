@@ -3,7 +3,6 @@ package lib_test
 import (
 	"os"
 	"os/user"
-	"runtime"
 	"testing"
 )
 
@@ -11,14 +10,6 @@ import (
 // rename file, check new filename exit
 func getInstallLocation(installPath string) string {
 	return string(os.PathSeparator) + installPath + string(os.PathSeparator)
-}
-
-func getInstallFile(installFile string) string {
-	if runtime.GOOS == "windows" {
-		return installFile + ".exe"
-	}
-
-	return installFile
 }
 
 func TestInstall(t *testing.T) {

@@ -1,21 +1,16 @@
 package lib_test
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"os/user"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"strings"
 	"testing"
-	"time"
 
-	"github.com/warrensbox/terraform-switcher/lib"
+	"github.com/jb-abbadie/simple-tfswitch/lib"
 )
 
 // TestRenameFile : Create a file, check filename exist,
@@ -171,193 +166,6 @@ func TestCreateDirIfNotExist(t *testing.T) {
 	cleanUp(installLocation)
 }
 
-//TestWriteLines : write to file, check readline to verify
-func TestWriteLines(t *testing.T) {
-	installPath := "/.terraform.versions_test/"
-	recentFile := "RECENT"
-	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
-	//semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
-
-	usr, errCurr := user.Current()
-	if errCurr != nil {
-		log.Fatal(errCurr)
-	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
-
-	createDirIfNotExist(installLocation)
-
-	recentFilePath := filepath.Join(installLocation, recentFile)
-	test_array := []string{"0.1.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
-
-	errWrite := lib.WriteLines(test_array, recentFilePath)
-
-	if errWrite != nil {
-		t.Logf("Write should work %v (unexpected)", errWrite)
-		log.Fatal(errWrite)
-	} else {
-		var (
-			file             *os.File
-			part             []byte
-			prefix           bool
-			errOpen, errRead error
-			lines            []string
-		)
-		if file, errOpen = os.Open(recentFilePath); errOpen != nil {
-			log.Fatal(errOpen)
-		}
-
-		reader := bufio.NewReader(file)
-		buffer := bytes.NewBuffer(make([]byte, 0))
-		for {
-			if part, prefix, errRead = reader.ReadLine(); errRead != nil {
-				break
-			}
-			buffer.Write(part)
-			if !prefix {
-				lines = append(lines, buffer.String())
-				buffer.Reset()
-			}
-		}
-		if errRead == io.EOF {
-			errRead = nil
-		}
-
-		if errRead != nil {
-			log.Fatalf("Error: %s\n", errRead)
-		}
-
-		for _, line := range lines {
-			if !semverRegex.MatchString(line) {
-				log.Fatalf("Write to file is not invalid: %s\n", line)
-				break
-			}
-		}
-
-		file.Close()
-		t.Log("Write versions exist (expected)")
-	}
-
-	cleanUp(installLocation)
-}
-
-// TestReadLines : read from file, check write to verify
-func TestReadLines(t *testing.T) {
-	installPath := "/.terraform.versions_test/"
-	recentFile := "RECENT"
-	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
-
-	usr, errCurr := user.Current()
-	if errCurr != nil {
-		log.Fatal(errCurr)
-	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
-
-	createDirIfNotExist(installLocation)
-
-	recentFilePath := filepath.Join(installLocation, recentFile)
-	test_array := []string{"0.0.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
-
-	var (
-		file      *os.File
-		errCreate error
-	)
-
-	if file, errCreate = os.Create(recentFilePath); errCreate != nil {
-		log.Fatalf("Error: %s\n", errCreate)
-	}
-
-	for _, item := range test_array {
-		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
-		if err != nil {
-			log.Fatalf("Error: %s\n", err)
-			break
-		}
-	}
-
-	lines, errRead := lib.ReadLines(recentFilePath)
-
-	if errRead != nil {
-		log.Fatalf("Error: %s\n", errRead)
-	}
-
-	for _, line := range lines {
-		if !semverRegex.MatchString(line) {
-			log.Fatalf("Write to file is not invalid: %s\n", line)
-			break
-		}
-	}
-
-	file.Close()
-	t.Log("Read versions exist (expected)")
-
-	cleanUp(installLocation)
-}
-
-// TestIsDirEmpty : create empty directory, check if empty
-func TestIsDirEmpty(t *testing.T) {
-	current := time.Now()
-
-	installPath := "/.terraform.versions_test/"
-
-	usr, errCurr := user.Current()
-	if errCurr != nil {
-		log.Fatal(errCurr)
-	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
-
-	test_dir := current.Format("2006-01-02")
-	test_dir_path := filepath.Join(installLocation, test_dir)
-	t.Logf("Create test dir: %v \n", test_dir)
-
-	createDirIfNotExist(installLocation)
-
-	createDirIfNotExist(test_dir_path)
-
-	empty := lib.IsDirEmpty(test_dir_path)
-
-	t.Logf("Expected directory to be empty %v [expected]", test_dir_path)
-
-	if empty == true {
-		t.Logf("Directory empty")
-	} else {
-		t.Error("Directory not empty")
-	}
-
-	cleanUp(test_dir_path)
-	cleanUp(installLocation)
-}
-
-// TestCheckDirHasTGBin : create tg file in directory, check if exist
-func TestCheckDirHasTFBin(t *testing.T) {
-	goarch := runtime.GOARCH
-	goos := runtime.GOOS
-	installPath := "/.terraform.versions_test/"
-	installFilePrefix := "terraform"
-
-	usr, errCurr := user.Current()
-	if errCurr != nil {
-		log.Fatal(errCurr)
-	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
-
-	createDirIfNotExist(installLocation)
-
-	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, installFilePrefix+"_"+goos+"_"+goarch))
-	createFile(installFileVersionPath)
-
-	empty := lib.CheckDirHasTGBin(installLocation, installFilePrefix)
-
-	t.Logf("Expected directory to have tf file %v [expected]", installFileVersionPath)
-
-	if empty == true {
-		t.Logf("Directory empty")
-	} else {
-		t.Error("Directory not empty")
-	}
-
-	cleanUp(installLocation)
-}
-
 // TestPath : create file in directory, check if path exist
 func TestPath(t *testing.T) {
 	installPath := "/.terraform.versions_test"
@@ -386,20 +194,6 @@ func TestPath(t *testing.T) {
 	}
 
 	cleanUp(installLocation)
-}
-
-// TestGetFileName : remove file ext.  .tfswitch.config returns .tfswitch
-func TestGetFileName(t *testing.T) {
-
-	fileNameWithExt := "file.toml"
-
-	fileName := lib.GetFileName(fileNameWithExt)
-
-	if fileName == "file" {
-		t.Logf("File removed extension (expected)")
-	} else {
-		t.Error("File did not remove extension (unexpected)")
-	}
 }
 
 // TestConvertExecutableExt : convert executable binary with extension
