@@ -27,7 +27,7 @@ func main() {
 
 	tfBinaryPath := installTFProvidedModule(dir, mirrorURL)
 
-	exitCode := runTerraform(tfBinaryPath, args...)
+	exitCode := runTerraform(tfBinaryPath, args[1:]...)
 	os.Exit(exitCode)
 }
 
