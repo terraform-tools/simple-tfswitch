@@ -91,7 +91,7 @@ func installFromConstraint(tfconstraint *string, mirrorURL string) string {
 		}
 	}
 
-	fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/jb-abbadie/simple-tfswitch/blob/master/README.md")
+	fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/jb-abbadie/simple-tfswitch/blob/main/README.md")
 	os.Exit(1)
 	return ""
 }
