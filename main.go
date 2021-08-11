@@ -25,7 +25,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	tfBinaryPath := installTFProvidedModule(dir, mirrorURL)
+	tfBinaryPath, err := installTFProvidedModule(dir, mirrorURL)
+
+	if err != nil {
+		fmt.Println("Error occured:", err)
+	}
 
 	exitCode := runTerraform(tfBinaryPath, args[1:]...)
 	os.Exit(exitCode)
@@ -39,10 +43,15 @@ func printInvalidTFVersion() {
 }
 
 // install when tf file is provided
-func installTFProvidedModule(dir string, mirrorURL string) string {
+func installTFProvidedModule(dir string, mirrorURL string) (string, error) {
 	module, _ := tfconfig.LoadModule(dir)
+
+	if len(module.RequiredCore) == 0 {
+		return "", fmt.Errorf("No required_versions found")
+	}
+
 	tfconstraint := module.RequiredCore[0] //we skip duplicated definitions and use only first one
-	return installFromConstraint(&tfconstraint, mirrorURL)
+	return installFromConstraint(&tfconstraint, mirrorURL), nil
 }
 
 // install using a version constraint
