@@ -1,4 +1,4 @@
-EXE  := tfswitch
+EXE  := simple-tfswitch
 PKG  := github.com/jb-abbadie/simple-tfswitch
 VER := $(shell cat version)
 PATH := build:$(PATH)
