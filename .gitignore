@@ -29,10 +29,12 @@ docs/.bundle/**
 
 .sass-cache
 
-tfswitch*
+simple-tfswitch
 
 build-script.sh
 
 .idea
 
 /vendor
+
+dist/
