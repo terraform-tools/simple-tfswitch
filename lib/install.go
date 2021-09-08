@@ -8,12 +8,15 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/rogpeppe/go-internal/lockedfile"
 )
 
 const (
 	installFile    = "terraform"
 	installVersion = "terraform_"
 	installPath    = ".terraform.versions"
+	lockFilePath   = "/tmp/simple-tfswitch.lock"
 )
 
 var (
@@ -48,6 +51,16 @@ func getInstallLocation() string {
 
 }
 
+func WaitForLockFile() (unlock func()) {
+	m := lockedfile.MutexAt(lockFilePath)
+	unlock, err := m.Lock()
+	if err != nil {
+		fmt.Printf("there was a problem while trying to aquire lockfile %v", lockFilePath)
+		os.Exit(1)
+	}
+	return unlock
+}
+
 //Install : Install the provided version in the argument
 func Install(tfversion string, mirrorURL string) string {
 
@@ -55,6 +68,10 @@ func Install(tfversion string, mirrorURL string) string {
 		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
 		os.Exit(1)
 	}
+
+	// version install lockfile
+	unlock := WaitForLockFile()
+	defer unlock()
 
 	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
 
