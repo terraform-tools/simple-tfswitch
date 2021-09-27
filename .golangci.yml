@@ -1,0 +1,66 @@
+---
+
+run:
+  tests: false
+
+linters:
+  enable:
+  - asciicheck
+  - bodyclose
+  - cyclop
+  - whitespace
+  - wastedassign
+  - unparam
+  - tparallel
+  - thelper
+  - tagliatelle
+  - exportloopref
+  - dupl
+  - goconst
+  - ifshort
+  - importas
+  - goimports
+  - gofumpt
+  - gocritic
+  - revive
+  - depguard
+  - dogsled
+  - durationcheck
+  - errname
+  - errorlint
+  - exhaustive
+  - forcetypeassert
+  - funlen
+  - gochecknoglobals
+  - gochecknoinits
+  - gocognit
+  - gocyclo
+  - godox
+  - gofmt
+  - goheader
+  - gomoddirectives
+  - gomodguard
+  - goprintffuncname
+  - makezero
+  - misspell
+  - nakedret
+  - nilerr
+  - nolintlint
+  - prealloc
+  - predeclared
+  - promlinter
+  - rowserrcheck
+  - sqlclosecheck
+  - stylecheck
+  - testpackage
+  - unconvert
+  disable:
+  - forbidigo # need to wait for log rework
+  - paralleltest # need to wait for tests rework
+
+    # these ones should be enabled later with dedicated PR to fix them
+  - gosec
+  - gomnd
+  - noctx
+  - goerr113
+  - nestif
