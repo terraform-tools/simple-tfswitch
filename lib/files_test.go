@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jb-abbadie/simple-tfswitch/lib"
+	"github.com/terraform-tools/simple-tfswitch/lib"
 )
 
 // TestRenameFile : Create a file, check filename exist,

@@ -1,5 +1,5 @@
 EXE  := simple-tfswitch
-PKG  := github.com/jb-abbadie/simple-tfswitch
+PKG  := github.com/terraform-tools/simple-tfswitch
 VER := $(shell cat version)
 PATH := build:$(PATH)
 GOOS ?= $(shell go env GOOS)
