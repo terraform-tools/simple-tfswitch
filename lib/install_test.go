@@ -13,7 +13,6 @@ func getInstallLocation(installPath string) string {
 }
 
 func TestInstall(t *testing.T) {
-
 	t.Run("User should exist",
 		func(t *testing.T) {
 			usr, errCurr := user.Current()

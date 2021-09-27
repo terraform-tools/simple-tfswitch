@@ -7,7 +7,6 @@ import (
 
 // TestMain : check to see if user exist
 func TestMain(t *testing.T) {
-
 	t.Run("User should exist",
 		func(t *testing.T) {
 			usr, errCurr := user.Current()

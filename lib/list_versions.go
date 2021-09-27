@@ -14,12 +14,11 @@ type tfVersionList struct {
 	tflist []string
 }
 
-//GetTFList :  Get the list of available terraform version given the hashicorp url
+// GetTFList :  Get the list of available terraform version given the hashicorp url
 func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
-
-	result, error := GetTFURLBody(mirrorURL)
-	if error != nil {
-		return nil, error
+	result, err := GetTFURLBody(mirrorURL)
+	if err != nil {
+		return nil, err
 	}
 
 	var tfVersionList tfVersionList
@@ -35,7 +34,7 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	for i := range result {
 		if r.MatchString(result[i]) {
 			str := r.FindString(result[i])
-			trimstr := strings.Trim(str, "/") //remove "/" from /X.X.X/
+			trimstr := strings.Trim(str, "/") // remove "/" from /X.X.X/
 			tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
 		}
 	}
@@ -45,14 +44,12 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	}
 
 	return tfVersionList.tflist, nil
-
 }
 
-//GetTFURLBody : Get list of terraform versions from hashicorp releases
+// GetTFURLBody : Get list of terraform versions from hashicorp releases
 func GetTFURLBody(mirrorURL string) ([]string, error) {
-
 	hasSlash := strings.HasSuffix(mirrorURL, "/")
-	if !hasSlash { //if does not have slash - append slash
+	if !hasSlash { // if does not have slash - append slash
 		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
 	}
 	resp, errURL := http.Get(mirrorURL)
@@ -65,13 +62,12 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 
 	if resp.StatusCode != 200 {
 		log.Printf("[Error] : Retrieving contents from url: %s", mirrorURL)
-		os.Exit(1)
+		return nil, fmt.Errorf("[Error] : Retrieving contents from url: %s", mirrorURL)
 	}
 
 	body, errBody := ioutil.ReadAll(resp.Body)
 	if errBody != nil {
 		log.Printf("[Error] : reading body: %v", errBody)
-		os.Exit(1)
 		return nil, errBody
 	}
 
@@ -89,7 +85,6 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 // For example: 0.1. 2 = invalid
 */
 func ValidVersionFormat(version string) bool {
-
 	// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
 	// Follow https://semver.org/spec/v1.0.0-beta.html
 	// Check regular expression at https://rubular.com/r/ju3PxbaSBALpJB

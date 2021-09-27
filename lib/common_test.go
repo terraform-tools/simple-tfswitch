@@ -14,7 +14,7 @@ func checkFileExist(file string) bool {
 
 func createFile(path string) {
 	// detect if file exists
-	var _, err = os.Stat(path)
+	_, err := os.Stat(path)
 
 	// create file if not exists
 	if os.IsNotExist(err) {
@@ -32,7 +32,7 @@ func createFile(path string) {
 func createDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		log.Printf("Creating directory for terraform: %v", dir)
-		err = os.MkdirAll(dir, 0755)
+		err = os.MkdirAll(dir, 0o755)
 		if err != nil {
 			fmt.Printf("Unable to create directory for terraform: %v", dir)
 			panic(err)

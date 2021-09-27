@@ -10,8 +10,7 @@ import (
 
 // RenameFile : rename file name
 func RenameFile(src string, dest string) {
-	err := os.Rename(src, dest)
-	if err != nil {
+	if err := os.Rename(src, dest); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -21,7 +20,6 @@ func RenameFile(src string, dest string) {
 func RemoveFiles(src string) {
 	files, err := filepath.Glob(src)
 	if err != nil {
-
 		panic(err)
 	}
 	for _, f := range files {
@@ -40,17 +38,15 @@ func CheckFileExist(file string) bool {
 // Unzip will decompress a zip archive, moving all files and folders
 // within the zip file (parameter 1) to an output directory (parameter 2).
 func Unzip(src string, dest string) ([]string, error) {
-
-	var filenames []string
-
 	r, err := zip.OpenReader(src)
 	if err != nil {
-		return filenames, err
+		return []string{}, err
 	}
 	defer r.Close()
 
-	for _, f := range r.File {
+	filenames := make([]string, 0, len(r.File))
 
+	for _, f := range r.File {
 		rc, err := f.Open()
 		if err != nil {
 			return filenames, err
@@ -62,15 +58,12 @@ func Unzip(src string, dest string) ([]string, error) {
 		filenames = append(filenames, fpath)
 
 		if f.FileInfo().IsDir() {
-
 			// Make Folder
 			err := os.MkdirAll(fpath, os.ModePerm)
 			if err != nil {
 				return []string{}, err
 			}
-
 		} else {
-
 			// Make File
 			if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
 				return filenames, err
@@ -89,17 +82,16 @@ func Unzip(src string, dest string) ([]string, error) {
 			if err != nil {
 				return filenames, err
 			}
-
 		}
 	}
 	return filenames, nil
 }
 
-//CreateDirIfNotExist : create directory if directory does not exist
+// CreateDirIfNotExist : create directory if directory does not exist
 func CreateDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		fmt.Printf("Creating directory for terraform binary at: %v\n", dir)
-		err = os.MkdirAll(dir, 0755)
+		err = os.MkdirAll(dir, 0o755)
 		if err != nil {
 			fmt.Printf("Unable to create directory for terraform binary at: %v", dir)
 			panic(err)
@@ -107,9 +99,9 @@ func CreateDirIfNotExist(dir string) {
 	}
 }
 
-//CheckDirExist : check if directory exist
-//dir=path to file
-//return bool
+// CheckDirExist : check if directory exist
+// dir=path to file
+// return bool
 func CheckDirExist(dir string) bool {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return false

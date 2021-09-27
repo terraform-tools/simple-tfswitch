@@ -14,7 +14,6 @@ const (
 
 // TestGetTFList : Get list from hashicorp
 func TestGetTFList(t *testing.T) {
-
 	listAll := true
 	list, _ := lib.GetTFList(hashiURL, listAll)
 
@@ -37,13 +36,11 @@ func TestGetTFList(t *testing.T) {
 	} else {
 		t.Log("Write versions exist (expected)")
 	}
-
 }
 
-//TestValidVersionFormat : test if func returns valid version format
+// TestValidVersionFormat : test if func returns valid version format
 // more regex testing at https://rubular.com/r/UvWXui7EU2icSb
 func TestValidVersionFormat(t *testing.T) {
-
 	var version string
 	version = "0.11.8"
 
@@ -134,5 +131,4 @@ func TestValidVersionFormat(t *testing.T) {
 	} else {
 		log.Fatalf("Failed to verify version format: %s\n", version)
 	}
-
 }

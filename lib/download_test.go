@@ -14,7 +14,6 @@ import (
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
 func TestDownloadFromURL_FileNameMatch(t *testing.T) {
-
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 	installVersion := "terraform_"
 	installPath := getInstallLocation(".terraform.versions_test")
@@ -32,7 +31,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
 		log.Printf("Creating directory for terraform: %v", installLocation)
-		err = os.MkdirAll(installLocation, 0755)
+		err = os.MkdirAll(installLocation, 0o755)
 		if err != nil {
 			fmt.Printf("Unable to create directory for terraform: %v", installLocation)
 			panic(err)
@@ -88,7 +87,6 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 // TestDownloadFromURL_FileExist : Check expected file exist when downloaded
 func TestDownloadFromURL_FileExist(t *testing.T) {
-
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 	installVersion := "terraform_"
 	installPath := getInstallLocation(".terraform.versions_test")
@@ -106,7 +104,7 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
 		log.Printf("Creating directory for terraform: %v", installLocation)
-		err = os.MkdirAll(installLocation, 0755)
+		err = os.MkdirAll(installLocation, 0o755)
 		if err != nil {
 			fmt.Printf("Unable to create directory for terraform: %v", installLocation)
 			panic(err)
@@ -162,7 +160,6 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 
 // TestInvalidURL : Invalid url should throw an error
 func TestInvalidURL(t *testing.T) {
-
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 	installVersion := "terraform_"
 	installPath := getInstallLocation(".terraform.versions_test")
@@ -181,7 +178,7 @@ func TestInvalidURL(t *testing.T) {
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
 		log.Printf("Creating directory for terraform: %v\n", installLocation)
-		err = os.MkdirAll(installLocation, 0755)
+		err = os.MkdirAll(installLocation, 0o755)
 		if err != nil {
 			fmt.Printf("Unable to create directory for terraform: %v\n", installLocation)
 			panic(err)
@@ -189,7 +186,7 @@ func TestInvalidURL(t *testing.T) {
 	}
 
 	url := hashiURL + invalidVersion + "/" + installVersion + invalidVersion + macOS
-	//expectedFile :=filepath.Join(usr.HomeDir, installPath, installVersion + invalidVersion + macOS)
+	// expectedFile :=filepath.Join(usr.HomeDir, installPath, installVersion + invalidVersion + macOS)
 	_, errDownload := lib.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
@@ -202,7 +199,6 @@ func TestInvalidURL(t *testing.T) {
 
 // TestDownloadFromURL_Valid : Test if https://releases.hashicorp.com/terraform/ is still valid
 func TestDownloadFromURL_Valid(t *testing.T) {
-
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 
 	url, err := url.ParseRequestURI(hashiURL)

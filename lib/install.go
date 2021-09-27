@@ -19,10 +19,6 @@ const (
 	lockFilePath   = "/tmp/simple-tfswitch.lock"
 )
 
-var (
-	installLocation = "/tmp"
-)
-
 // getInstallLocation : get location where the terraform binary will be installed,
 // will create a directory in the home location if it does not exist
 func getInstallLocation() string {
@@ -42,28 +38,26 @@ func getInstallLocation() string {
 	}
 
 	/* set installation location */
-	installLocation = filepath.Join(userCommon, installPath)
+	installLocation := filepath.Join(userCommon, installPath)
 
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
 
 	return installLocation
-
 }
 
 func WaitForLockFile() (unlock func()) {
 	m := lockedfile.MutexAt(lockFilePath)
 	unlock, err := m.Lock()
 	if err != nil {
-		fmt.Printf("there was a problem while trying to aquire lockfile %v", lockFilePath)
+		fmt.Printf("there was a problem while trying to acquire lockfile %v", lockFilePath)
 		os.Exit(1)
 	}
 	return unlock
 }
 
-//Install : Install the provided version in the argument
-func Install(tfversion string, mirrorURL string) string {
-
+// Install : Install the provided version in the argument
+func Install(tfversion string, mirrorURL string) (string, error) {
 	if !ValidVersionFormat(tfversion) {
 		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
 		os.Exit(1)
@@ -73,15 +67,10 @@ func Install(tfversion string, mirrorURL string) string {
 	unlock := WaitForLockFile()
 	defer unlock()
 
-	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
+	installLocation := getInstallLocation() // get installation location -  this is where we will put our terraform binary file
 
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
-
-	// TODO: Workaround for macos arm64 since terraform doesn't have a binary for it yet
-	if goos == "darwin" && goarch == "arm64" {
-		goarch = "amd64"
-	}
 
 	/* check if selected version already downloaded */
 	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, installVersion+tfversion))
@@ -89,10 +78,10 @@ func Install(tfversion string, mirrorURL string) string {
 
 	/* if selected version already exist, */
 	if fileExist {
-		return installFileVersionPath
+		return installFileVersionPath, nil
 	}
 
-	//if does not have slash - append slash
+	// if does not have slash - append slash
 	hasSlash := strings.HasSuffix(mirrorURL, "/")
 	if !hasSlash {
 		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
@@ -105,16 +94,14 @@ func Install(tfversion string, mirrorURL string) string {
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
-		fmt.Println(errDownload)
-		os.Exit(1)
+		return "", errDownload
 	}
 
 	/* unzip the downloaded zipfile */
 	_, errUnzip := Unzip(zipFile, installLocation)
 	if errUnzip != nil {
 		fmt.Println("[Error] : Unable to unzip downloaded zip file")
-		log.Fatal(errUnzip)
-		os.Exit(1)
+		return "", errUnzip
 	}
 
 	/* rename unzipped file to terraform version name - terraform_x.x.x */
@@ -124,10 +111,10 @@ func Install(tfversion string, mirrorURL string) string {
 	/* remove zipped file to clear clutter */
 	RemoveFiles(zipFile)
 
-	return installFileVersionPath
+	return installFileVersionPath, nil
 }
 
-//ConvertExecutableExt : convert excutable with local OS extension
+// ConvertExecutableExt : convert excutable with local OS extension
 func ConvertExecutableExt(fpath string) string {
 	switch runtime.GOOS {
 	case "windows":

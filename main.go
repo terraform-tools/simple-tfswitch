@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -26,9 +27,8 @@ func main() {
 	}
 
 	tfBinaryPath, err := installTFProvidedModule(dir, mirrorURL)
-
 	if err != nil {
-		fmt.Println("Error occured:", err)
+		fmt.Println("Error occurred:", err)
 	}
 
 	exitCode := runTerraform(tfBinaryPath, args[1:]...)
@@ -47,20 +47,19 @@ func installTFProvidedModule(dir string, mirrorURL string) (string, error) {
 	module, _ := tfconfig.LoadModule(dir)
 
 	if len(module.RequiredCore) == 0 {
-		return "", fmt.Errorf("No required_versions found")
+		return "", fmt.Errorf("no required_versions found")
 	}
 
-	tfconstraint := module.RequiredCore[0] //we skip duplicated definitions and use only first one
+	tfconstraint := module.RequiredCore[0] // we skip duplicated definitions and use only first one
 	return installFromConstraint(&tfconstraint, mirrorURL), nil
 }
 
 // install using a version constraint
 func installFromConstraint(tfconstraint *string, mirrorURL string) string {
-	tfversion := ""
-	listAll := true                                //set list all true - all versions including beta and rc will be displayed
-	tflist, _ := lib.GetTFList(mirrorURL, listAll) //get list of versions
+	listAll := true                                // set list all true - all versions including beta and rc will be displayed
+	tflist, _ := lib.GetTFList(mirrorURL, listAll) // get list of versions
 
-	constrains, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
+	constrains, err := semver.NewConstraint(*tfconstraint) // NewConstraint returns a Constraints instance that a Version instance can be checked against
 	if err != nil {
 		fmt.Printf("Error parsing constraint: %s\nPlease check constrain syntax on terraform file.\n", err)
 		fmt.Println()
@@ -68,7 +67,7 @@ func installFromConstraint(tfconstraint *string, mirrorURL string) string {
 	}
 	versions := make([]*semver.Version, len(tflist))
 	for i, tfvals := range tflist {
-		version, err := semver.NewVersion(tfvals) //NewVersion parses a given version and returns an instance of Version or an error if unable to parse the version.
+		version, err := semver.NewVersion(tfvals) // NewVersion parses a given version and returns an instance of Version or an error if unable to parse the version.
 		if err != nil {
 			fmt.Printf("Error parsing version: %s", err)
 			os.Exit(1)
@@ -81,23 +80,23 @@ func installFromConstraint(tfconstraint *string, mirrorURL string) string {
 
 	for _, element := range versions {
 		if constrains.Check(element) { // Validate a version against a constraint
-			tfversion = element.String()
-			if lib.ValidVersionFormat(tfversion) { //check if version format is correct
-				return Install(tfversion, mirrorURL)
-			} else {
-				printInvalidTFVersion()
-				os.Exit(1)
+			tfversion := element.String()
+			if lib.ValidVersionFormat(tfversion) { // check if version format is correct
+				out, err := lib.Install(tfversion, mirrorURL)
+				if err != nil {
+					log.Printf("Error during install %v", err)
+					os.Exit(1)
+				}
+				return out
 			}
+			printInvalidTFVersion()
+			os.Exit(1)
 		}
 	}
 
 	fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/terraform-tools/simple-tfswitch/blob/main/README.md")
 	os.Exit(1)
 	return ""
-}
-
-func Install(tfversion string, mirrorURL string) string {
-	return lib.Install(tfversion, mirrorURL)
 }
 
 func runTerraform(tfBinaryPath string, args ...string) int {
@@ -108,8 +107,9 @@ func runTerraform(tfBinaryPath string, args ...string) int {
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			return exitError.ExitCode()
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			return exitErr.ExitCode()
 		}
 	}
 	return 0
