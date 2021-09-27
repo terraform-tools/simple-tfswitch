@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	lib "github.com/jb-abbadie/simple-tfswitch/lib"
+	lib "github.com/terraform-tools/simple-tfswitch/lib"
 )
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/jb-abbadie/simple-tfswitch/lib"
+	"github.com/terraform-tools/simple-tfswitch/lib"
 )
 
 const (
