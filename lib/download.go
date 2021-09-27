@@ -23,8 +23,8 @@ func DownloadFromURL(installLocation string, url string) (string, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != 200 {
-		//Sometimes hashicorp terraform file names are not consistent
-		//For example 0.12.0-alpha4 naming convention in the release repo is not consistent
+		// Sometimes hashicorp terraform file names are not consistent
+		// For example 0.12.0-alpha4 naming convention in the release repo is not consistent
 		return "", fmt.Errorf("[Error] : Unable to download from %s", url)
 	}
 
