@@ -101,7 +101,7 @@ func Install(tfversion string, mirrorURL string) (string, error) {
 	}
 
 	/* unzip the downloaded zipfile */
-	_, errUnzip := Unzip(zipFile, installLocation)
+	errUnzip := Unzip(zipFile, installLocation)
 	if errUnzip != nil {
 		fmt.Println("[Error] : Unable to unzip downloaded zip file")
 		return "", errUnzip

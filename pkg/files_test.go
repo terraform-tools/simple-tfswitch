@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"path"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"testing"
 
 	"github.com/terraform-tools/simple-tfswitch/pkg"
@@ -114,7 +114,7 @@ func TestUnzip(t *testing.T) {
 
 	createDirIfNotExist(installLocation)
 
-	files, errUnzip := pkg.Unzip(absPath, installLocation)
+	errUnzip := pkg.Unzip(absPath, installLocation)
 
 	if errUnzip != nil {
 		fmt.Println("Unable to unzip zip file")
@@ -122,7 +122,7 @@ func TestUnzip(t *testing.T) {
 		os.Exit(1)
 	}
 
-	tst := strings.Join(files, "")
+	tst := path.Join(installLocation, "test-data-1.txt")
 
 	if exist := checkFileExist(tst); exist {
 		t.Logf("File exist %v", tst)
