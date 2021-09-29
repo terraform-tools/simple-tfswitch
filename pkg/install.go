@@ -56,6 +56,7 @@ func WaitForLockFile() (unlock func()) {
 		fmt.Printf("there was a problem while trying to acquire lockfile %v", lockFilePath)
 		os.Exit(1)
 	}
+
 	return unlock
 }
 
@@ -104,6 +105,7 @@ func Install(tfversion string, mirrorURL string) (string, error) {
 	errUnzip := Unzip(zipFile, installLocation)
 	if errUnzip != nil {
 		fmt.Println("[Error] : Unable to unzip downloaded zip file")
+
 		return "", errUnzip
 	}
 
@@ -124,6 +126,7 @@ func ConvertExecutableExt(fpath string) string {
 		if filepath.Ext(fpath) == ".exe" {
 			return fpath
 		}
+
 		return fpath + ".exe"
 	default:
 		return fpath
@@ -137,8 +140,8 @@ func InstallTFProvidedModule(dir string, mirrorURL string) (string, error) {
 	if len(module.RequiredCore) == 0 {
 		return "", fmt.Errorf("no required_versions found")
 	}
-
 	tfconstraint := module.RequiredCore[0] // we skip duplicated definitions and use only first one
+
 	return installFromConstraint(&tfconstraint, mirrorURL), nil
 }
 
@@ -175,6 +178,7 @@ func installFromConstraint(tfconstraint *string, mirrorURL string) string {
 					log.Printf("Error during install %v", err)
 					os.Exit(1)
 				}
+
 				return out
 			}
 			printInvalidTFVersion()
@@ -184,5 +188,6 @@ func installFromConstraint(tfconstraint *string, mirrorURL string) string {
 
 	fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/terraform-tools/simple-tfswitch/blob/main/README.md")
 	os.Exit(1)
+
 	return ""
 }

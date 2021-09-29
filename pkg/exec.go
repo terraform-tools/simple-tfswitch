@@ -19,5 +19,6 @@ func RunTerraform(tfBinaryPath string, args ...string) int {
 			return exitErr.ExitCode()
 		}
 	}
+
 	return 0
 }

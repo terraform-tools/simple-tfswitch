@@ -56,18 +56,21 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 	if errURL != nil {
 		log.Printf("[Error] : Getting url: %v", errURL)
 		os.Exit(1)
+
 		return nil, errURL
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		log.Printf("[Error] : Retrieving contents from url: %s", mirrorURL)
+
 		return nil, fmt.Errorf("[Error] : Retrieving contents from url: %s", mirrorURL)
 	}
 
 	body, errBody := ioutil.ReadAll(resp.Body)
 	if errBody != nil {
 		log.Printf("[Error] : reading body: %v", errBody)
+
 		return nil, errBody
 	}
 
