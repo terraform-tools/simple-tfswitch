@@ -167,22 +167,26 @@ func installFromConstraint(tfconstraint *string, mirrorURL string) string {
 	}
 
 	sort.Sort(sort.Reverse(semver.Collection(versions)))
-
 	for _, element := range versions {
-		if constrains.Check(element) { // Validate a version against a constraint
-			tfversion := element.String()
-			if ValidVersionFormat(tfversion) { // check if version format is correct
-				out, err := Install(tfversion, mirrorURL)
-				if err != nil {
-					log.Printf("Error during install %v", err)
-					os.Exit(1)
-				}
+		// Validate a version against a constraint
+		if !constrains.Check(element) {
+			continue
+		}
+		tfversion := element.String()
 
-				return out
-			}
-			log.Errorf("Invalid terraform version format.")
+		// check if version format is correct
+		if !ValidVersionFormat(tfversion) {
+			log.Debugf("Version not with invalid format %v", tfversion)
+
+			continue
+		}
+		out, err := Install(tfversion, mirrorURL)
+		if err != nil {
+			log.Printf("Error during install %v", err)
 			os.Exit(1)
 		}
+
+		return out
 	}
 
 	log.Errorf("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/terraform-tools/simple-tfswitch/blob/main/README.md")
