@@ -3,11 +3,12 @@ package pkg
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type tfVersionList struct {
@@ -40,7 +41,7 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	}
 
 	if len(tfVersionList.tflist) == 0 {
-		fmt.Printf("Cannot get list from mirror: %s\n", mirrorURL)
+		log.Errorf("Cannot get list from mirror: %s", mirrorURL)
 	}
 
 	return tfVersionList.tflist, nil
@@ -54,7 +55,7 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 	}
 	resp, errURL := http.Get(mirrorURL)
 	if errURL != nil {
-		log.Printf("[Error] : Getting url: %v", errURL)
+		log.Printf("Getting url: %v", errURL)
 		os.Exit(1)
 
 		return nil, errURL
@@ -62,14 +63,14 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		log.Printf("[Error] : Retrieving contents from url: %s", mirrorURL)
+		log.Printf("Retrieving contents from url: %s", mirrorURL)
 
-		return nil, fmt.Errorf("[Error] : Retrieving contents from url: %s", mirrorURL)
+		return nil, fmt.Errorf("retrieving contents from url: %s", mirrorURL)
 	}
 
 	body, errBody := ioutil.ReadAll(resp.Body)
 	if errBody != nil {
-		log.Printf("[Error] : reading body: %v", errBody)
+		log.Printf("Reading body: %v", errBody)
 
 		return nil, errBody
 	}

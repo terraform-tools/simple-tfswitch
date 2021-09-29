@@ -2,16 +2,17 @@ package pkg
 
 import (
 	"archive/zip"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // RenameFile : rename file name
 func RenameFile(src string, dest string) {
 	if err := os.Rename(src, dest); err != nil {
-		fmt.Println(err)
+		log.Errorln("Error while renaming", err)
 	}
 }
 
@@ -96,10 +97,10 @@ func handleZipFile(f *zip.File, dest string) error {
 // CreateDirIfNotExist : create directory if directory does not exist
 func CreateDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		fmt.Printf("Creating directory for terraform binary at: %v\n", dir)
+		log.Debugf("Creating directory for terraform binary at: %v", dir)
 		err = os.MkdirAll(dir, 0o755)
 		if err != nil {
-			fmt.Printf("Unable to create directory for terraform binary at: %v", dir)
+			log.Errorf("Unable to create directory for terraform binary at: %v", dir)
 			panic(err)
 		}
 	}

@@ -16,6 +16,7 @@ linters:
   - errorlint
   - exhaustive
   - exportloopref
+  - forbidigo
   - forcetypeassert
   - funlen
   - gochecknoglobals
@@ -57,7 +58,6 @@ linters:
   - wastedassign
   - whitespace
   disable:
-  - forbidigo # need to wait for log rework
   - paralleltest # need to wait for tests rework
 
     # these ones should be enabled later with dedicated PR to fix them
