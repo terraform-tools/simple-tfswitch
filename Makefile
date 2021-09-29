@@ -20,6 +20,5 @@ clean:
 	rm -f $(EXE) $(EXE)-*-*-*
 
 .PHONY: test
-test: $(EXE)
-	mv $(EXE) build
+test:
 	go test -v ./...
