@@ -18,6 +18,7 @@ func DownloadFromURL(installLocation string, url string) (string, error) {
 	response, err := http.Get(url)
 	if err != nil {
 		fmt.Println("[Error] : Error while downloading", url, "-", err)
+
 		return "", err
 	}
 	defer response.Body.Close()
@@ -32,6 +33,7 @@ func DownloadFromURL(installLocation string, url string) (string, error) {
 	output, err := os.Create(zipFile)
 	if err != nil {
 		fmt.Println("[Error] : Error while creating", zipFile, "-", err)
+
 		return "", err
 	}
 	defer output.Close()
@@ -39,9 +41,11 @@ func DownloadFromURL(installLocation string, url string) (string, error) {
 	n, err := io.Copy(output, response.Body)
 	if err != nil {
 		fmt.Println("[Error] : Error while downloading", url, "-", err)
+
 		return "", err
 	}
 
 	fmt.Println(n, "bytes downloaded")
+
 	return zipFile, nil
 }

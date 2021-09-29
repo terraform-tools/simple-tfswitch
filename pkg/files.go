@@ -12,7 +12,6 @@ import (
 func RenameFile(src string, dest string) {
 	if err := os.Rename(src, dest); err != nil {
 		fmt.Println(err)
-		return
 	}
 }
 
@@ -32,6 +31,7 @@ func RemoveFiles(src string) {
 // CheckFileExist : check if file exist in directory
 func CheckFileExist(file string) bool {
 	_, err := os.Stat(file)
+
 	return err == nil
 }
 
@@ -50,6 +50,7 @@ func Unzip(src string, dest string) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -70,6 +71,7 @@ func handleZipFile(f *zip.File, dest string) error {
 		if err != nil {
 			return err
 		}
+
 		return nil
 	}
 
@@ -88,10 +90,7 @@ func handleZipFile(f *zip.File, dest string) error {
 	// Close the file without defer to close before next iteration of loop
 	outFile.Close()
 
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // CreateDirIfNotExist : create directory if directory does not exist
@@ -110,10 +109,9 @@ func CreateDirIfNotExist(dir string) {
 // dir=path to file
 // return bool
 func CheckDirExist(dir string) bool {
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		return false
-	}
-	return true
+	_, err := os.Stat(dir)
+
+	return os.IsNotExist(err)
 }
 
 // Path : returns path of directory
