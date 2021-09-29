@@ -5,7 +5,7 @@ PATH := build:$(PATH)
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
 
-$(EXE): go.mod *.go pkg/*.go
+$(EXE): go.mod *.go pkg/*.go pkg/*/*.go
 	go build -v -ldflags "-X main.version=$(VER)" -o $@ $(PKG)
 
 .PHONY: release

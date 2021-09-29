@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"os"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/terraform-tools/simple-tfswitch/pkg"
+	"github.com/terraform-tools/simple-tfswitch/pkg/logger"
 )
 
 const (
@@ -15,14 +16,17 @@ const (
 func main() {
 	args := os.Args
 	dir, err := os.Getwd()
+
+	logger.Setup()
+
 	if err != nil {
-		log.Printf("Failed to get current directory %v\n", err)
+		log.Errorf("Failed to get current directory %v", err)
 		os.Exit(1)
 	}
 
 	tfBinaryPath, err := pkg.InstallTFProvidedModule(dir, mirrorURL)
 	if err != nil {
-		fmt.Println("Error occurred:", err)
+		log.Errorln("Error occurred:", err)
 	}
 
 	exitCode := pkg.RunTerraform(tfBinaryPath, args[1:]...)

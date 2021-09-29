@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -13,6 +12,7 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 	"github.com/rogpeppe/go-internal/lockedfile"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -53,7 +53,7 @@ func WaitForLockFile() (unlock func()) {
 	m := lockedfile.MutexAt(lockFilePath)
 	unlock, err := m.Lock()
 	if err != nil {
-		fmt.Printf("there was a problem while trying to acquire lockfile %v", lockFilePath)
+		log.Errorf("there was a problem while trying to acquire lockfile %v", lockFilePath)
 		os.Exit(1)
 	}
 
@@ -63,7 +63,7 @@ func WaitForLockFile() (unlock func()) {
 // Install : Install the provided version in the argument
 func Install(tfversion string, mirrorURL string) (string, error) {
 	if !ValidVersionFormat(tfversion) {
-		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
+		log.Errorf("The provided terraform version format does not exist - %s.", tfversion)
 		os.Exit(1)
 	}
 
@@ -104,7 +104,7 @@ func Install(tfversion string, mirrorURL string) (string, error) {
 	/* unzip the downloaded zipfile */
 	errUnzip := Unzip(zipFile, installLocation)
 	if errUnzip != nil {
-		fmt.Println("[Error] : Unable to unzip downloaded zip file")
+		log.Error("Unable to unzip downloaded zip file")
 
 		return "", errUnzip
 	}
@@ -152,15 +152,14 @@ func installFromConstraint(tfconstraint *string, mirrorURL string) string {
 
 	constrains, err := semver.NewConstraint(*tfconstraint) // NewConstraint returns a Constraints instance that a Version instance can be checked against
 	if err != nil {
-		fmt.Printf("Error parsing constraint: %s\nPlease check constrain syntax on terraform file.\n", err)
-		fmt.Println()
+		log.Errorf("Error parsing constraint: %s, Please check constraint syntax on terraform file.", err)
 		os.Exit(1)
 	}
 	versions := make([]*semver.Version, len(tflist))
 	for i, tfvals := range tflist {
 		version, err := semver.NewVersion(tfvals) // NewVersion parses a given version and returns an instance of Version or an error if unable to parse the version.
 		if err != nil {
-			fmt.Printf("Error parsing version: %s", err)
+			log.Errorf("Error parsing version: %s", err)
 			os.Exit(1)
 		}
 
@@ -181,12 +180,12 @@ func installFromConstraint(tfconstraint *string, mirrorURL string) string {
 
 				return out
 			}
-			printInvalidTFVersion()
+			log.Errorf("Invalid terraform version format.")
 			os.Exit(1)
 		}
 	}
 
-	fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/terraform-tools/simple-tfswitch/blob/main/README.md")
+	log.Errorf("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/terraform-tools/simple-tfswitch/blob/main/README.md")
 	os.Exit(1)
 
 	return ""

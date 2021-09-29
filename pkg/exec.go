@@ -4,6 +4,8 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func RunTerraform(tfBinaryPath string, args ...string) int {
@@ -18,6 +20,9 @@ func RunTerraform(tfBinaryPath string, args ...string) int {
 		if errors.As(err, &exitErr) {
 			return exitErr.ExitCode()
 		}
+		log.Errorf("Failed launching terraform binary %v", err)
+
+		return -1
 	}
 
 	return 0
