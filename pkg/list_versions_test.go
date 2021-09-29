@@ -1,11 +1,11 @@
-package lib_test
+package pkg_test
 
 import (
 	"log"
 	"reflect"
 	"testing"
 
-	"github.com/terraform-tools/simple-tfswitch/lib"
+	"github.com/terraform-tools/simple-tfswitch/pkg"
 )
 
 const (
@@ -15,7 +15,7 @@ const (
 // TestGetTFList : Get list from hashicorp
 func TestGetTFList(t *testing.T) {
 	listAll := true
-	list, _ := lib.GetTFList(hashiURL, listAll)
+	list, _ := pkg.GetTFList(hashiURL, listAll)
 
 	val := "0.1.0"
 	var exists bool
@@ -44,7 +44,7 @@ func TestValidVersionFormat(t *testing.T) {
 	var version string
 	version = "0.11.8"
 
-	valid := lib.ValidVersionFormat(version)
+	valid := pkg.ValidVersionFormat(version)
 
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
@@ -54,7 +54,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "1.11.9"
 
-	valid = lib.ValidVersionFormat(version)
+	valid = pkg.ValidVersionFormat(version)
 
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
@@ -64,7 +64,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "1.11.a"
 
-	valid = lib.ValidVersionFormat(version)
+	valid = pkg.ValidVersionFormat(version)
 
 	if valid == false {
 		t.Logf("Invalid version format : %s (expected)", version)
@@ -74,7 +74,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "22323"
 
-	valid = lib.ValidVersionFormat(version)
+	valid = pkg.ValidVersionFormat(version)
 
 	if valid == false {
 		t.Logf("Invalid version format : %s (expected)", version)
@@ -84,7 +84,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "@^&*!)!"
 
-	valid = lib.ValidVersionFormat(version)
+	valid = pkg.ValidVersionFormat(version)
 
 	if valid == false {
 		t.Logf("Invalid version format : %s (expected)", version)
@@ -94,7 +94,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "1.11.9-beta1"
 
-	valid = lib.ValidVersionFormat(version)
+	valid = pkg.ValidVersionFormat(version)
 
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
@@ -104,7 +104,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "0.12.0-rc2"
 
-	valid = lib.ValidVersionFormat(version)
+	valid = pkg.ValidVersionFormat(version)
 
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
@@ -114,7 +114,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "1.11.4-boom"
 
-	valid = lib.ValidVersionFormat(version)
+	valid = pkg.ValidVersionFormat(version)
 
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
@@ -124,7 +124,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "1.11.4-1"
 
-	valid = lib.ValidVersionFormat(version)
+	valid = pkg.ValidVersionFormat(version)
 
 	if valid == false {
 		t.Logf("Invalid version format : %s (expected)", version)
