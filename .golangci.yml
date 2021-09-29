@@ -37,6 +37,7 @@ linters:
   - makezero
   - misspell
   - nakedret
+  - nestif
   - nilerr
   - nolintlint
   - prealloc
@@ -63,4 +64,3 @@ linters:
   - gomnd
   - noctx
   - goerr113
-  - nestif
