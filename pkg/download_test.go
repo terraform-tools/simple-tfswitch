@@ -1,4 +1,4 @@
-package lib_test
+package pkg_test
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	lib "github.com/terraform-tools/simple-tfswitch/lib"
+	"github.com/terraform-tools/simple-tfswitch/pkg"
 )
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
@@ -43,7 +43,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
 	expectedFile := filepath.Join(usr.HomeDir, installPath, installVersion+lowestVersion+macOS)
-	installedFile, errDownload := lib.DownloadFromURL(installLocation, url)
+	installedFile, errDownload := pkg.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
 		t.Logf("Expected file name %v to be downloaded", expectedFile)
@@ -65,7 +65,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	url = hashiURL + latestVersion + "/" + installVersion + latestVersion + macOS
 	expectedFile = filepath.Join(usr.HomeDir, installPath, installVersion+latestVersion+macOS)
-	installedFile, errDownload = lib.DownloadFromURL(installLocation, url)
+	installedFile, errDownload = pkg.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
 		t.Logf("Expected file name %v to be downloaded", expectedFile)
@@ -116,7 +116,7 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 
 	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
 	expectedFile := filepath.Join(usr.HomeDir, installPath, installVersion+lowestVersion+macOS)
-	installedFile, errDownload := lib.DownloadFromURL(installLocation, url)
+	installedFile, errDownload := pkg.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
 		t.Logf("Expected file name %v to be downloaded", expectedFile)
@@ -138,7 +138,7 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 
 	url = hashiURL + latestVersion + "/" + installVersion + latestVersion + macOS
 	expectedFile = filepath.Join(usr.HomeDir, installPath, installVersion+latestVersion+macOS)
-	installFile, errDownload := lib.DownloadFromURL(installLocation, url)
+	installFile, errDownload := pkg.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
 		t.Logf("Expected file name %v to be downloaded", expectedFile)
@@ -187,7 +187,7 @@ func TestInvalidURL(t *testing.T) {
 
 	url := hashiURL + invalidVersion + "/" + installVersion + invalidVersion + macOS
 	// expectedFile :=filepath.Join(usr.HomeDir, installPath, installVersion + invalidVersion + macOS)
-	_, errDownload := lib.DownloadFromURL(installLocation, url)
+	_, errDownload := pkg.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
 		t.Logf("Unable to download from %s - invalid url or version (expected)\n", url)

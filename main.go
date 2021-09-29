@@ -11,7 +11,7 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 
-	lib "github.com/terraform-tools/simple-tfswitch/lib"
+	"github.com/terraform-tools/simple-tfswitch/pkg"
 )
 
 const (
@@ -57,7 +57,7 @@ func installTFProvidedModule(dir string, mirrorURL string) (string, error) {
 // install using a version constraint
 func installFromConstraint(tfconstraint *string, mirrorURL string) string {
 	listAll := true                                // set list all true - all versions including beta and rc will be displayed
-	tflist, _ := lib.GetTFList(mirrorURL, listAll) // get list of versions
+	tflist, _ := pkg.GetTFList(mirrorURL, listAll) // get list of versions
 
 	constrains, err := semver.NewConstraint(*tfconstraint) // NewConstraint returns a Constraints instance that a Version instance can be checked against
 	if err != nil {
@@ -81,8 +81,8 @@ func installFromConstraint(tfconstraint *string, mirrorURL string) string {
 	for _, element := range versions {
 		if constrains.Check(element) { // Validate a version against a constraint
 			tfversion := element.String()
-			if lib.ValidVersionFormat(tfversion) { // check if version format is correct
-				out, err := lib.Install(tfversion, mirrorURL)
+			if pkg.ValidVersionFormat(tfversion) { // check if version format is correct
+				out, err := pkg.Install(tfversion, mirrorURL)
 				if err != nil {
 					log.Printf("Error during install %v", err)
 					os.Exit(1)
