@@ -8,39 +8,32 @@ linters:
   - asciicheck
   - bodyclose
   - cyclop
-  - whitespace
-  - wastedassign
-  - unparam
-  - tparallel
-  - thelper
-  - tagliatelle
-  - exportloopref
-  - dupl
-  - goconst
-  - ifshort
-  - importas
-  - goimports
-  - gofumpt
-  - gocritic
-  - revive
   - depguard
   - dogsled
+  - dupl
   - durationcheck
   - errname
   - errorlint
   - exhaustive
+  - exportloopref
   - forcetypeassert
   - funlen
   - gochecknoglobals
   - gochecknoinits
   - gocognit
+  - goconst
+  - gocritic
   - gocyclo
   - godox
   - gofmt
+  - gofumpt
   - goheader
+  - goimports
   - gomoddirectives
   - gomodguard
   - goprintffuncname
+  - ifshort
+  - importas
   - makezero
   - misspell
   - nakedret
@@ -49,11 +42,18 @@ linters:
   - prealloc
   - predeclared
   - promlinter
+  - revive
   - rowserrcheck
   - sqlclosecheck
   - stylecheck
+  - tagliatelle
   - testpackage
+  - thelper
+  - tparallel
   - unconvert
+  - unparam
+  - wastedassign
+  - whitespace
   disable:
   - forbidigo # need to wait for log rework
   - paralleltest # need to wait for tests rework
