@@ -3,7 +3,6 @@ package pkg
 import (
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"regexp"
 	"strings"
@@ -54,7 +53,7 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 	if !hasSlash { // if does not have slash - append slash
 		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
 	}
-	resp, errURL := http.Get(mirrorURL)
+	resp, errURL := HttpClient().Get(mirrorURL)
 	if errURL != nil {
 		log.Printf("Getting url: %v", errURL)
 		os.Exit(1)
