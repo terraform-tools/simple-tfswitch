@@ -17,6 +17,7 @@ func HTTPClient() *http.Client {
 	client.RetryMax = retryAttempts
 	client.RetryWaitMin = time.Duration(retryDelay) * time.Second
 	client.RetryWaitMax = client.RetryWaitMin
+	client.Logger = nil // Disables DEBUG logs, failure log is kept.
 
 	return client.StandardClient()
 }
