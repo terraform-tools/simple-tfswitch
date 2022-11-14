@@ -2,8 +2,7 @@ package pkg
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
+	"io"
 	"os"
 	"regexp"
 	"strings"
@@ -36,7 +35,7 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	for i := range result {
 		if r.MatchString(result[i]) {
 			str := r.FindString(result[i])
-			trimstr := strings.Trim(str, "/\"") //remove "/" from /X.X.X/
+			trimstr := strings.Trim(str, "/\"") // remove "/" from /X.X.X/
 			tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
 		}
 	}
@@ -54,7 +53,7 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 	if !hasSlash { // if does not have slash - append slash
 		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
 	}
-	resp, errURL := http.Get(mirrorURL)
+	resp, errURL := HTTPClient().Get(mirrorURL)
 	if errURL != nil {
 		log.Printf("Getting url: %v", errURL)
 		os.Exit(1)
@@ -69,7 +68,7 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 		return nil, fmt.Errorf("retrieving contents from url: %s", mirrorURL)
 	}
 
-	body, errBody := ioutil.ReadAll(resp.Body)
+	body, errBody := io.ReadAll(resp.Body)
 	if errBody != nil {
 		log.Printf("Reading body: %v", errBody)
 
