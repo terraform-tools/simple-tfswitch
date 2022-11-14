@@ -16,7 +16,7 @@ func DownloadFromURL(installLocation string, url string) (string, error) {
 	fileName := tokens[len(tokens)-1]
 	log.Debugf("Downloading to: %s", installLocation)
 
-	response, err := HttpClient().Get(url)
+	response, err := HTTPClient().Get(url)
 	if err != nil {
 		log.Errorln("Error while downloading", url, "-", err)
 
